@@ -1,0 +1,9 @@
+#virtual environment
+.venv/
+
+#pycache
+__pycache__/
+*.py[cod]
+
+#database
+*.xlsx
