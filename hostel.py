@@ -1,16 +1,18 @@
 from boarder import Boarder 
 from openpyxl import load_workbook
-from config import workbook_name,meal_count_sheet_name
-from useful_utils import day_month_year
+from openpyxl.utils import get_column_letter
+from config import (workbook_name,meal_count_sheet_name,marketing_sheet_name,
+meal_charge_limit,info_string,success_string,meal_off_string,meal_on_string,
+final_balance_info,failure_string,guest_meal_charge)
+
 import datetime
+import calendar
 
 
 class Hostel:
     def __init__(self,filename):
         self.filename= filename
         self.boarders= []
-        self.total_marketing_expenses= 0
-        self.current_meal_charge= 0
         
     #add boarder and update the excell sheet    
     def add_boarder(self,name):
@@ -24,10 +26,8 @@ class Hostel:
                 last_cell_no+=1
             else:
                 break    
-        ws[f"{last_cell_no}"]=name  
-        wb.save(workbook_name)     
-        msg=f"Boarder {boarder.name} is successfully added to hostel"
-        print(msg)
+        ws[f"A{last_cell_no}"]=name  
+        wb.save(workbook_name)
     
      #add the deposit and updatee the excell sheet   
     def  add_deposit_(self,_name,amount):
@@ -48,7 +48,7 @@ class Hostel:
                     break
             ws[f"C{row_number}"]=target_boarder.deposit
             wb.save(workbook_name)  
-            print(f"{_name} your deposit of {amount} is successfull.")
+            print(f"{_name} your deposit of {amount} is successfull {success_string}.")
         else:
             print(f"{_name}  is not found as a boarder")
      
@@ -61,8 +61,8 @@ class Hostel:
         for boarder in self.boarders:
             if boarder.name == _name:
                 info=input("""
-                "on" for turn on night meal \n
-                "od" for turn on day meal \n
+                "on" for turn on night meal 
+                "od" for turn on day meal 
                 "yes" for both day and night\n""")
                 boarder.on_meal(info)
                 success=True
@@ -74,9 +74,8 @@ class Hostel:
             for cell in ws["A"]:
                 if cell.value == _name:
                     row_number=cell.row
+                    break
                     
-            #update the meal status
-            ws[f"B{row_number}"]="yes"
             now=datetime.datetime.now()
             day=now.day 
                   
@@ -84,28 +83,55 @@ class Hostel:
             for cell in ws[1]:
                 if cell.value == day:
                     start_col=cell.column
+                    break
             if info == "yes":
-                ws.cell(row=row_number,column=start_col).value="on"
-                ws.cell(row=row_number,column=start_col+2).value="on"
+                if ws.cell(row=row_number,column=start_col).value == None and ws.cell(row=row_number,column=start_col+2).value == None:
+                    ws.cell(row=row_number,column=start_col).value = meal_on_string
+                    ws.cell(row=row_number,column=start_col+2).value= meal_on_string
+                    ws[f"B{row_number}"]=meal_on_string
+                    if ws[f"D{row_number}"].value == None:
+                        ws[f"D{row_number}"].value = 0
+                        ws[f"D{row_number}"].value +=2
+                    else:
+                        ws[f"D{row_number}"].value +=2
+                    print(f"{success_string}")
+        
             elif info =="od":
-                ws.cell(row=row_number,column=start_col).value="on"
+                if ws.cell(row=row_number,column=start_col).value == None :
+                    ws.cell(row=row_number,column=start_col).value = meal_on_string
+                    ws[f"B{row_number}"]=meal_on_string
+                    if ws[f"D{row_number}"].value == None:
+                        ws[f"D{row_number}"].value = 0
+                        ws[f"D{row_number}"].value +=1
+                    else:
+                        ws[f"D{row_number}"].value +=1
+                print({success_string})
+                
             elif info =="on":
-                ws.cell(row=row_number,column=start_col+2).value="on"
+                if ws.cell(row=row_number,column=start_col+2).value == None:
+                    ws.cell(row=row_number,column=start_col+2).value= meal_on_string
+                    ws[f"B{row_number}"]=meal_on_string
+                    if ws[f"D{row_number}"].value == None:
+                        ws[f"D{row_number}"].value = 0
+                        ws[f"D{row_number}"].value +=1
+                    else:
+                        ws[f"D{row_number}"].value +=1
+                    print(success_string)
+                    
             wb.save(workbook_name)
         else:
-            print(f"Name {_name} does not exist")
+            print(f"Name {_name} does not exist {failure_string}")
             
     #off the meal and update the excell sheet
     def _meal_off(self,_name):
         info=None
         success=False
-        
         #check in memory if user exist or not
         for boarder in self.boarders:
             if boarder.name == _name:
                 info=input("""
-                "on" for turn off night meal \n
-                "od" for turn off day meal \n
+                "on" for turn off night meal 
+                "od" for turn off day meal 
                 "off" for both day and night\n""")
                 boarder.off_meal(info)
                 success=True
@@ -114,37 +140,111 @@ class Hostel:
             #update the excel sheet
             wb=load_workbook(workbook_name)
             ws=wb[meal_count_sheet_name]
-            date=day_month_year()[0]
+            now=datetime.datetime.now()
+            date=now.day
             
             for cell in ws["A"]:
                 if cell.value == _name:
                     row_number = cell.row
-                    for cell in ws[1]:
-                        if cell.value == date:
-                            start_col=cell.column
-                            if info == "off":
-                               ws.cell(row=row_number,column=start_col).value = "off"
-                               ws.cell(row=row_number,column=start_col+3).value = "off" 
-                            elif info == "od":
-                                ws.cell(row=row_number,column=start_col).value = "off"
-                            elif info == "on":
-                                ws.cell(row=row_number,column=start_col+3).value = "off"
-                            break
+                    break
+            for cell in ws[1]:
+                if cell.value == date:
+                    start_col=cell.column
+                    break
+            if info == "off":
+                if  ws.cell(row=row_number,column=start_col).value == meal_on_string and  ws.cell(row=row_number,column=start_col+2).value == meal_on_string:
+                    ws.cell(row=row_number,column=start_col).value = None
+                    ws.cell(row=row_number,column=start_col+2).value = None 
+                    ws[f"B{row_number}"].value = None
+                    ws[f"D{row_number}"].value -= 2
+                    print(success_string)
+            elif info == "od":
+                if ws.cell(row=row_number,column=start_col).value == meal_on_string:
+                    ws.cell(row=row_number,column=start_col).value = None
+                    ws[f"D{row_number}"].value -= 1
+                    print(success_string)
+            elif info == "on":
+                if  ws.cell(row=row_number,column=start_col+2).value == meal_on_string:
+                    ws.cell(row=row_number,column=start_col+2).value = None
+                    ws[f"D{row_number}"].value -= 1
+                    print(success_string)
             wb.save(workbook_name)
         else:
-            print(f"{_name} you are not a boarder")
+            print(f"{_name} you are not a boarder {failure_string}")
     
     #guest meal on 
     def guest_meal_on(self,_name):
         success=False
+        string_msg= True
         for object in self.boarders:
             if object.name == _name:
+                string_msg=False
                 info=input("""
                 on guest meal in both day and night -yes
                 on guest meal in day-od
                 on guest meal at night-on\n
                            """)
-                object.on_guest_meal(info)
+                if object.day_active == True or object.night_active == True:
+                    object.on_guest_meal(info)
+                    success=True
+                    break
+                else:
+                    print(f"{failure_string} you dont have any active meal status")
+        if success:
+            wb=load_workbook(workbook_name)
+            ws=wb[meal_count_sheet_name]
+            now=datetime.datetime.now()
+            day=now.day
+            for cell in ws["A"]:
+                if cell.value == _name:
+                    row_number=cell.row
+                    break
+            for cell in ws[1]:
+                if cell.value == day:
+                    get_col=cell.column
+                    break
+            if info == "od":
+                if ws.cell(row=row_number,column=get_col+1).value == None:
+                    ws.cell(row=row_number,column=get_col+1).value=meal_on_string
+                    if ws[f"E{row_number}"].value == None:
+                        ws[f"E{row_number}"].value = 0
+                        ws[f"E{row_number}"].value +=1
+                    else:
+                        ws[f"E{row_number}"].value +=1
+                        print(success_string)
+            elif info == "on":
+                if ws.cell(row=row_number,column=get_col+3).value == None:
+                   ws.cell(row=row_number,column=get_col+3).value = meal_on_string
+                   if ws[f"E{row_number}"].value == None:
+                        ws[f"E{row_number}"].value = 0
+                        ws[f"E{row_number}"].value +=1
+                   else:
+                        ws[f"E{row_number}"].value +=1
+                        print(success_string)
+            elif info == "yes":
+                if ws.cell(row=row_number,column=get_col+1).value == None and  ws.cell(row=row_number,column=get_col+3).value == None:
+                    ws.cell(row=row_number,column=get_col+1).value = meal_on_string
+                    ws.cell(row=row_number,column=get_col+3).value = meal_on_string
+                    if ws[f"E{row_number}"].value == None:
+                        ws[f"E{row_number}"].value = 0
+                        ws[f"E{row_number}"].value +=2
+                    else:
+                        ws[f"E{row_number}"].value +=2
+                        print(success_string)
+                wb.save(workbook_name)
+        elif string_msg:
+             print(f"no user exist wuth this name {failure_string}") 
+            
+    def guest_meal_off(self,_name):
+        success=False
+        for object in self.boarders:
+            if object.name == _name:
+                info=input("""
+                off guest meal in both day and night -off
+                off guest meal in day-od
+                off guest meal at night-on\n
+                           """)
+                object.off_guest_meal(info)
                 success=True
                 break
         if success:
@@ -161,42 +261,202 @@ class Hostel:
                     get_col=cell.column
                     break
             if info == "od":
-                ws.cell(row=row_number,column=get_col+1).value="on"
+                if ws.cell(row=row_number,column=get_col+1).value == meal_on_string:
+                    ws.cell(row=row_number,column=get_col+1).value=None
+                    ws[f"E{row_number}"].value -= 2
+                    print(success_string)
             elif info == "on":
-                ws.cell(row=row_number,column=get_col+3).value="on"
-            elif info == "yes":
-                ws.cell(row=row_number,column=get_col+1).value="on"
-                ws.cell(row=row_number,column=get_col+3).value="on"
+                if ws.cell(row=row_number,column=get_col+3).value == meal_on_string:
+                    ws.cell(row=row_number,column=get_col+3).value=None
+                    ws[f"E{row_number}"].value -= 2
+                    print(success_string)
+            elif info == "off":
+                if  ws.cell(row=row_number,column=get_col+1).value == meal_on_string and ws.cell(row=row_number,column=get_col+3).value == meal_on_string :
+                    ws.cell(row=row_number,column=get_col+1).value=None
+                    ws.cell(row=row_number,column=get_col+3).value=None
+                    ws[f"E{row_number}"].value -= 2
+                    print(success_string)
             wb.save(workbook_name)
         else:
-            print(f"no user exist wuth this name") 
+            print(f"no user exist wuth this name {failure_string}") 
+            
+    
+    def total_expences(self):
+        wb=load_workbook(workbook_name)
+        ws=wb[marketing_sheet_name]
+        now=datetime.datetime.now()
+        year=now.year
+        month=now.month
+        day=calendar.monthrange(year=year,month=month)[1]
+        daily_marketing_expences=0
+        #daily marketing expences
+        for row in range (3,day+3):
+            if ws.cell(row=row,column=3).value == None:
+                ws.cell(row=row,column=3).value = 0
+                daily_marketing_expences += ws.cell(row=row,column=3).value
+            else:
+                daily_marketing_expences += int(ws.cell(row=row,column=3).value)
+        #total expences
+        total=daily_marketing_expences 
+        return total
+                
+    def guest_meal_counts(self):
+        total_boarder=len(self.boarders)
+        count=[]
+        loop_count=0
+        wb=load_workbook(workbook_name)
+        ws=wb[meal_count_sheet_name]
+        for cell in ws["E"]:
+            if loop_count <= total_boarder + 2:
+                if cell.value is not None:
+                    count.append(cell.value)
+                else:
+                    count.append(0)
+            else:
+                break
+        modified_count=count[2:]
+        return sum(modified_count)
+        
+    def own_meal_counts(self):
+        total_boarders=len(self.boarders)
+        loop_count=0
+        count=[]
+        wb=load_workbook(workbook_name)
+        ws=wb[meal_count_sheet_name]
+        for cell in ws["D"]:
+            if loop_count <= total_boarders +2:
+                if cell.value is not None:
+                    count.append(cell.value)
+                else:
+                    count.append(0)
+                loop_count+=1
+            else:
+                break
+        updated_count=count[2:]
+        return sum(updated_count)
+    
+    def hostel_mess_balance(self):
+        deposit_balance=0
+        expences=self.total_expences()
+        for object in self.boarders:
+            deposit_balance+= object.deposit
+        current_balance=deposit_balance - expences
+        if current_balance < 0:
+            print(f"{-1*current_balance} is on due in the market from the mess" )
+        elif current_balance >= 0:
+            print(f"Balance {current_balance}")
+        return current_balance
                
     def calculate_meal_charge(self):
-        all_meals=0
-        for i in self.boarders:
-            all_meals+=i.total_meal
+        expences=self.total_expences()
+        all_meals=self.guest_meal_counts() + self.own_meal_counts()
         if all_meals == 0:
-            print("first day of mess meal charge is 0")
+            print("Mess just starts today")
+            meal_charge=0
         else:
-            meal_charge=self.total_marketing_expenses/all_meals
-            self.current_meal_charge=meal_charge
-            print(f"Current meal charge is {self.current_meal_charge}")
-            
-    def print_final_balance(self):
-        balance_dict={}
-        for i in self.boarders:
-            final_balance=(i.total_meal * self.current_meal_charge) - i.deposit
-            if final_balance == 0:
-                balance_dict[i.name]="all clear"
-                
-            if final_balance < 0:
-                balance_dict[i.name]=f"Return from hostel mess {-1*(final_balance)}"
-                
-            if final_balance > 0:
-                balance_dict[i.name]=f"Due from {i.name} : {final_balance}"
+            meal_charge = expences / all_meals
+        return meal_charge
         
-        for name,status in balance_dict.items():
-            print(f"Name {name} : {status}\n")
+    def update_daily_marketing(self):
+        wb=load_workbook(workbook_name)
+        ws=wb[marketing_sheet_name]
+        now=datetime.datetime.now()
+        year=now.year
+        month=now.month
+        day=now.day
+        user_input=input("""
+                    1.Update Daily Marketing\n""")
+        if user_input == "1":
+            for cell in ws["A"]:
+                if cell.value == f"{day}/{month}/{year}":
+                    row_num=cell.row
+                    break
+        if user_input == "1":
+            ws.cell(row=row_num,column=2).value=grocery_shoper=input("Enter the grocery provider's name --- ")
+            ws.cell(row=row_num,column=3).value=money_spend=input("Enter the money spent in daily marketing")
+            ws.cell(row=row_num,column=4).value=remark=input("Enter the remarks")
+            print(success_string)
+            wb.save(workbook_name)
+        else:
+            print(info_string,"--- not a valid user input , try again")
+      
+    def txtfile_final_balance(self):
+        balance_dict={}
+        if len(self.boarders) > 0:
+            for boarder_obb in self.boarders:
+                boarder_final_balance_info=[]
+                own_meal_expences = (boarder_obb.total_own_meal * self.calculate_meal_charge())
+                guest_meal_expences=(boarder_obb.total_guest_meal * guest_meal_charge)
+                boarder_final_balance_info.append(own_meal_expences + guest_meal_expences)
+                balance=boarder_obb.deposit - (own_meal_expences + guest_meal_expences)
+                boarder_final_balance_info.append(balance)
+                balance_dict[boarder_obb.name]=boarder_final_balance_info
+            with open(final_balance_info,"w") as file:
+                sl_no=1
+                for key,value in balance_dict.items():
+                    if value[1] == 0:
+                        file.write(f"{sl_no}. {key}----Your money in current mess is clear\n")
+                    elif value[1] < 0:
+                        file.write(f"{sl_no}. {key}----Money due {-1*value[1]}\n")
+                    elif value[1] > 0:
+                        file.write(f"{sl_no}. {key}----return fromo mess {value[1]}\n")
+                    sl_no += 1
+                    
+        else:
+            print("No boarder exist")
+                    
+    def daily_number_of_meals(self):
+        day = 0
+        guest_day = 0
+        night = 0
+        guest_night =0
+        now=datetime.datetime.now()
+        date=now.day
+        loop=len(self.boarders)        
+        wb=load_workbook(workbook_name)
+        ws=wb[meal_count_sheet_name]
+        for cell in ws[1]:
+            if cell.value == date:
+                colum_no=cell.column
+        for row in range(3,loop + 3):
+            cell= ws.cell(row=row,column=colum_no)
+            if cell.value == meal_on_string:
+                day += 1
+        
+        for row in range(3,loop + 3):
+            cell= ws.cell(row=row,column=colum_no + 1)
+            if cell.value == meal_on_string:
+                guest_day += 1
+                
+        for row in range(3,loop + 3):
+            cell= ws.cell(row=row,column=colum_no + 2)
+            if cell.value == meal_on_string:
+                night += 1
+        
+        for row in range(3,loop + 3):
+            cell= ws.cell(row=row,column=colum_no + 3)
+            if cell.value == meal_on_string:
+                guest_night += 1
+                
+        info_tup=(day,guest_day,night,guest_night)
+        info_list=list(info_tup)
+        
+        return info_list
+       
+        
+        
+        
+    
+            
+        
+        
+        
+            
+            
+                    
+                    
+                        
+            
             
 
    

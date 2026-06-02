@@ -5,25 +5,18 @@ meal_count_sheet_name="meal_counts"
 
 marketing_sheet_name="maketings"
 
-establishment_sheet_name="establishment"
-
 meal_routin_sheet_name="meal_routin"
 
-#boarder txt file
-boarder_txt="boarder.txt"
+manager_sheet_name="mess_details"
+
+final_balance_info="final_balance.txt"
 
 #meal prices 
-guest_meal=60
-
-grand_guest_meal=80
-
-extra_egg=10
+guest_meal_charge=60
 
 approx_meal_charge=60
 
-establishment_charge=100
-
-meal_thresold=1900
+meal_charge_limit=60
 
 #ui element
 success_string = " ✅ "
@@ -34,13 +27,13 @@ selected_string = " 🔵 "
 meal_on_string = " 🟢 "
 meal_off_string = " 🔴 "
 
-#ruleboolks
-no_beef=["nb","no beef"]
+# #ruleboolks
+# no_beef=["nb","no beef"]
 
-no_fish=["nf","no fish"]
+# no_fish=["nf","no fish"]
 
-meal_on=["on","yes","od"]
+# meal_on=["on","yes","od"]
 
-meal_off=["off","on","od"]
+# meal_off=["off","on","od"]
 
 

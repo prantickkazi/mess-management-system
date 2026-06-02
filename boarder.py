@@ -7,7 +7,7 @@ class Boarder:
         self.name=name
         self.deposit=0
         self.row_number=None
-        self.total_meal=0
+        self.total_own_meal=0
         self.total_guest_meal=0
         self.active=None
         self.night_active=None
@@ -15,75 +15,105 @@ class Boarder:
         self.guest_active=None
         self.guest_day_active=None
         self.guest_night_active=None
-        
+        self.total_meal=self.total_guest_meal + self.total_own_meal
         
     def on_meal(self,info= "yes"):
         if info == "yes":
-            self.night_active=True
-            self.day_active=True
-            self.active=True
-            print(f"your both meal is on")
-            self.total_meal+=2
+            if self.night_active == None and self.day_active == None:
+                self.night_active=True
+                self.day_active=True
+                self.active=True
+                self.day_active=True
+                self.night_active=True
+                print(f"your both meal is on")
+                self.total_own_meal+=2
+            else:
+                print("Your meal is active already")
         elif info == "on":
-            self.night_active=True
-            self.day_active=False
-            self.active=True
-            print("your night meal is only on")
-            self.total_meal+=1
+            if self.night_active == None:
+                self.night_active == True
+                self.active=True
+                self.total_own_meal+=1
+            else :
+                print("Your night meal is already on")
         elif info == "od":
-            self.night_active=False
-            self.day_active=True
-            self.active=True
-            print("your day meal is only on")
-            self.total_meal+=1
+            if self.day_active == None:
+                self.day_active=True
+                self.active=True
+                self.total_own_meal+=1
+            else :
+                print("Your day meal is on already")
            
     def off_meal(self,info):
         if info == "off":
-            self.active = False
-            self.day_active = False
-            self.night_active = False
+            if self.day_active == True and  self.night_active == True:
+                self.active = None
+                self.day_active = None
+                self.night_active = None
+                self.total_own_meal -=2
+            else:
+                print(f"You do not have any active meal status")
         elif info == "od":
-            self.day_active == False
-            self.night_active == True
-            self.active=True
-            self.total_meal += 1
+            if self.day_active == True:
+                self.day_active == None
+                self.total_own_meal  -= 1
+            else :
+                print("Your day meal is off already")
         elif info == "on":
-            self.day_active == False
-            self.night_active == True
-            self.active=True
-            self.total_meal += 1
+            if self.night_active == True:
+                self.night_active == None
+                self.total_own_meal -= 1
+            else:
+                print("Your night meal is off already")
+            
             
     def on_guest_meal(self,info):
         if info == "yes":
-            self.guest_active = True
-            self.guest_day_active = True
-            self.guest_night_active = True
-            self.guest_meal += 2
+            if self.guest_day_active == None and self.guest_night_active == None:
+                self.guest_active = True
+                self.guest_day_active = True
+                self.guest_night_active = True
+                self.total_guest_meal += 2
+            else:
+                print("your meal is active already")   
+        elif info == "od":
+            if self.guest_night_active == None:
+                self.guest_active = True
+                self.guest_day_active = True
+                self.total_guest_meal += 1
+            else:
+                print("active already")
+        elif info == "on":
+            if self.guest_night_active == None:
+                self.guest_active = True
+                self.guest_night_active = True
+                self.total_guest_meal += 1
+            else:
+                print("active already")
+        
+    def off_guest_meal(self,info):
+        if info == "off":
+            self.guest_active = None
+            self.guest_day_active = None
+            self.guest_night_active = None
+            self.total_guest_meal -= 2
         if info == "od":
             self.guest_active = True
             self.guest_day_active = True
-            self.guest_night_active = False
-            self.guest_meal += 1
-            pass
+            self.guest_night_active = None
+            self.total_guest_meal -= 1
+
         if info == "on":
             self.guest_active = True
-            self.guest_day_active = False
+            self.guest_day_active = None
             self.guest_night_active = True
-            self.guest_meal += 1
-            pass
-        
-    def off_guest_meal(self,info):
-        self.guest_active=False
+            self.total_guest_meal -= 1
         
     def add_deposit(self,amount):
         self.deposit+=amount
-        # write_in_excel_file(meal_count_sheet_name,f"C{self.row_number}",self.deposit)
         msg=f"{self.name} your deposit of{amount} is successful.New balance {self.deposit}"
         print(msg)
         
-    def get_row_number(self):
-        
-        pass
         
     
         

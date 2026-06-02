@@ -26,9 +26,9 @@ def create_marketing_sheet():
     month_name=now.strftime("%B, %Y")
     
     #creating the rows
-    row1=[f"Daily Marketing {month_name}", "", "", "", "", "",f" Extra Marketing {month_name}", "", ""]
+    row1=[f"Daily Marketing {month_name}", "", "", "",]
     ws.append(row1)
-    row2=["Date","Name","Money Spent","Remark", "", "","Date","Name","Money Spent"]
+    row2=["Date","Name","Money Spent","Remark"]
     ws.append(row2)
     d=1
     for row in range(3,days_in_month+3):
@@ -44,7 +44,7 @@ def create_marketing_sheet():
     
     #applying it to cells
     for row in range(1,3):
-        for col in range(1,10):
+        for col in range(1,5):
             cell=ws.cell(row=row,column=col)
             cell.font=black_bolt
             cell.fill=heaader_fill
@@ -52,15 +52,14 @@ def create_marketing_sheet():
     
     #formating and merging
     ws.merge_cells(start_row=1,start_column=1,end_row=1,end_column=4)
-    ws.merge_cells(start_row=1,start_column=7,end_row=1,end_column=9)
     
-    for col in range(1,10):
+    for col in range(1,5):
         col_lebel=get_column_letter(col)
         ws.column_dimensions[col_lebel].width=15
     wb.save(workbook_name)
     print(f"Sheet {marketing_sheet_name} is successfully created in {workbook_name}")
     
-# init_marketing_sheet5()
+# init_marketing_sheet()
 # create_marketing_sheet()
        
             
