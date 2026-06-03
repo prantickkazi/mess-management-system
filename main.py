@@ -24,4 +24,5 @@ else:
     created = True
         
 if created:
-    main_menu()
+    while True:
+        main_menu()

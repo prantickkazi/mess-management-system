@@ -14,6 +14,39 @@ class Hostel:
         self.filename= filename
         self.boarders= []
         
+    #check status
+    def status(self,name):
+        wb=load_workbook(workbook_name)
+        ws=wb[meal_count_sheet_name]
+        now=datetime.datetime.now()
+        day=now.day
+        present = False
+        
+        for boarder in self.boarders:
+            if boarder.name == name: 
+                present = True 
+                break
+                
+        if present:   
+            for cell in ws["A"]:
+                if cell.value == name:
+                    row_number = cell.row
+                    break
+            
+            for cell in ws[1]:
+                if cell.value == day:
+                    column_no = cell.column
+    
+            if ws.cell(row=row_number,column=column_no) == meal_on_string or  ws.cell(row=row_number,column=column_no + 2) == meal_on_string:
+                ws[f"B{row_number}"] = meal_on_string
+            elif ws.cell(row=row_number,column=column_no+1) == meal_on_string or  ws.cell(row=row_number,column=column_no + 3) == meal_on_string:
+                ws[f"B{row_number}"] = meal_on_string
+            else:
+                ws[f"B{row_number}"] = None
+        else:
+            pass
+                
+        
     #add boarder and update the excell sheet    
     def add_boarder(self,name):
         boarder=Boarder(name)
@@ -117,8 +150,12 @@ class Hostel:
                     else:
                         ws[f"D{row_number}"].value +=1
                     print(success_string)
+            else:
+                print(f"{failure_string} invalid responce")
                     
+            self.status(_name)
             wb.save(workbook_name)
+            
         else:
             print(f"Name {_name} does not exist {failure_string}")
             
@@ -168,7 +205,12 @@ class Hostel:
                     ws.cell(row=row_number,column=start_col+2).value = None
                     ws[f"D{row_number}"].value -= 1
                     print(success_string)
+            else:
+                print(f"{failure_string} invalid responce")
+            
+            self.status(_name)
             wb.save(workbook_name)
+            
         else:
             print(f"{_name} you are not a boarder {failure_string}")
     
@@ -190,6 +232,7 @@ class Hostel:
                     break
                 else:
                     print(f"{failure_string} you dont have any active meal status")
+                    break
         if success:
             wb=load_workbook(workbook_name)
             ws=wb[meal_count_sheet_name]
@@ -209,6 +252,7 @@ class Hostel:
                     if ws[f"E{row_number}"].value == None:
                         ws[f"E{row_number}"].value = 0
                         ws[f"E{row_number}"].value +=1
+                        print(success_string)
                     else:
                         ws[f"E{row_number}"].value +=1
                         print(success_string)
@@ -218,6 +262,7 @@ class Hostel:
                    if ws[f"E{row_number}"].value == None:
                         ws[f"E{row_number}"].value = 0
                         ws[f"E{row_number}"].value +=1
+                        print(success_string)
                    else:
                         ws[f"E{row_number}"].value +=1
                         print(success_string)
@@ -228,10 +273,15 @@ class Hostel:
                     if ws[f"E{row_number}"].value == None:
                         ws[f"E{row_number}"].value = 0
                         ws[f"E{row_number}"].value +=2
+                        print(success_string)
                     else:
                         ws[f"E{row_number}"].value +=2
                         print(success_string)
-                wb.save(workbook_name)
+            else:
+                print(f"{failure_string} invalid responce")
+            self.status(_name)   
+            wb.save(workbook_name)
+            
         elif string_msg:
              print(f"no user exist wuth this name {failure_string}") 
             
@@ -263,12 +313,12 @@ class Hostel:
             if info == "od":
                 if ws.cell(row=row_number,column=get_col+1).value == meal_on_string:
                     ws.cell(row=row_number,column=get_col+1).value=None
-                    ws[f"E{row_number}"].value -= 2
+                    ws[f"E{row_number}"].value -= 1
                     print(success_string)
             elif info == "on":
                 if ws.cell(row=row_number,column=get_col+3).value == meal_on_string:
                     ws.cell(row=row_number,column=get_col+3).value=None
-                    ws[f"E{row_number}"].value -= 2
+                    ws[f"E{row_number}"].value -= 1
                     print(success_string)
             elif info == "off":
                 if  ws.cell(row=row_number,column=get_col+1).value == meal_on_string and ws.cell(row=row_number,column=get_col+3).value == meal_on_string :
@@ -276,7 +326,12 @@ class Hostel:
                     ws.cell(row=row_number,column=get_col+3).value=None
                     ws[f"E{row_number}"].value -= 2
                     print(success_string)
+            else:
+                print(f"{failure_string} invalid responce")
+            
+            self.status(_name) 
             wb.save(workbook_name)
+            
         else:
             print(f"no user exist wuth this name {failure_string}") 
             
@@ -399,7 +454,7 @@ class Hostel:
                     elif value[1] < 0:
                         file.write(f"{sl_no}. {key}----Money due {-1*value[1]}\n")
                     elif value[1] > 0:
-                        file.write(f"{sl_no}. {key}----return fromo mess {value[1]}\n")
+                        file.write(f"{sl_no}. {key}----return from mess {value[1]}\n")
                     sl_no += 1
                     
         else:
