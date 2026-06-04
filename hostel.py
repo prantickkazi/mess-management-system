@@ -367,6 +367,7 @@ class Hostel:
                     count.append(cell.value)
                 else:
                     count.append(0)
+                loop_count += 1
             else:
                 break
         modified_count=count[2:]
@@ -400,16 +401,22 @@ class Hostel:
             print(f"{-1*current_balance} is on due in the market from the mess" )
         elif current_balance >= 0:
             print(f"Balance {current_balance}")
+        print(f"Total deposit :{deposit_balance},   Total expences: {expences}")
         return current_balance
                
     def calculate_meal_charge(self):
         expences=self.total_expences()
         all_meals=self.guest_meal_counts() + self.own_meal_counts()
-        if all_meals == 0:
-            print("Mess just starts today")
-            meal_charge=0
-        else:
-            meal_charge = expences / all_meals
+        if expences == 0 or all_meals == 0:
+            print("Tere is no money expences or no meal is active in past")
+        else: 
+            if all_meals == 0:
+                print("Mess just starts today")
+                meal_charge=0
+            else:
+                meal_charge = expences / all_meals
+                print(f"Total Meals Till Now : {all_meals},Guest: {self.guest_meal_counts()}, Normal: {self.own_meal_counts()} ")
+                print(f"Total Expences Till Now : {expences}")
         return meal_charge
         
     def update_daily_marketing(self):
@@ -428,8 +435,8 @@ class Hostel:
                     break
         if user_input == "1":
             ws.cell(row=row_num,column=2).value=grocery_shoper=input("Enter the grocery provider's name --- ")
-            ws.cell(row=row_num,column=3).value=money_spend=input("Enter the money spent in daily marketing")
-            ws.cell(row=row_num,column=4).value=remark=input("Enter the remarks")
+            ws.cell(row=row_num,column=3).value=money_spend=input("Enter the money spent in daily marketing ---")
+            ws.cell(row=row_num,column=4).value=remark=input("Enter the remarks ---")
             print(success_string)
             wb.save(workbook_name)
         else:

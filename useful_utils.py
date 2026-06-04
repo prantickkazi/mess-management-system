@@ -153,8 +153,8 @@ def main_menu():
           my_hostel.add_boarder(name=name)
           print(f"{name}: boarder added to to hostel mess {success_string}")
      elif user_responce == "3":
-          boarder_name=input("enter the boarder name")
-          boarder_amout=int(input("enter the deposit amount"))
+          boarder_name=input("enter the boarder name -- ")
+          boarder_amout=int(input("enter the deposit amount -- "))
           my_hostel.add_deposit_(boarder_name,boarder_amout)
           print(f"{success_string}")
      elif user_responce == "4":

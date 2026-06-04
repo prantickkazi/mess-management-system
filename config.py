@@ -12,9 +12,9 @@ manager_sheet_name="mess_details"
 final_balance_info="final_balance.txt"
 
 #meal prices 
-guest_meal_charge=60
-
 approx_meal_charge=60
+
+guest_meal_charge=60
 
 meal_charge_limit=60
 
