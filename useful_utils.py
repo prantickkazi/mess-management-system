@@ -158,11 +158,14 @@ def main_menu():
           my_hostel.add_deposit_(boarder_name,boarder_amout)
           print(f"{success_string}")
      elif user_responce == "4":
-          meal_charge = my_hostel.calculate_meal_charge()
+          meal_charge = my_hostel.calculate_meal_charge()[0]
+          print(f"Meal charge: {round(meal_charge,2)}")
+          print(f"Total expence : {round(my_hostel.calculate_meal_charge()[1],2)}")
+          print(f"Total meals : {round(my_hostel.calculate_meal_charge()[2],2)}")
           if meal_charge <= meal_charge_limit :
-               print(f"Meal_charge {meal_charge} ,It is under current meal charge limit")
+               print(f"Meal_charge is under current meal charge limit")
           else:
-               print(f"Meal charge {meal_charge} , It in above current meal charge limit")
+               print(f"Meal charge is above current meal charge limit")
      elif user_responce == "5":
           my_hostel.update_daily_marketing()
      elif user_responce == "6":

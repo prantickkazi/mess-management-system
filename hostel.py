@@ -398,7 +398,7 @@ class Hostel:
             deposit_balance+= object.deposit
         current_balance=deposit_balance - expences
         if current_balance < 0:
-            print(f"{-1*current_balance} is on due in the market from the mess" )
+            print(f"{-1*current_balance} due in the market from the mess" )
         elif current_balance >= 0:
             print(f"Balance {current_balance}")
         print(f"Total deposit :{deposit_balance},   Total expences: {expences}")
@@ -408,16 +408,15 @@ class Hostel:
         expences=self.total_expences()
         all_meals=self.guest_meal_counts() + self.own_meal_counts()
         if expences == 0 or all_meals == 0:
-            print("Tere is no money expences or no meal is active in past")
+            print("Tere is no expences or no meal is active in past")
         else: 
             if all_meals == 0:
                 print("Mess just starts today")
                 meal_charge=0
             else:
                 meal_charge = expences / all_meals
-                print(f"Total Meals Till Now : {all_meals},Guest: {self.guest_meal_counts()}, Normal: {self.own_meal_counts()} ")
-                print(f"Total Expences Till Now : {expences}")
-        return meal_charge
+        info_list=[meal_charge,expences,all_meals]
+        return  info_list
         
     def update_daily_marketing(self):
         wb=load_workbook(workbook_name)
@@ -447,7 +446,7 @@ class Hostel:
         if len(self.boarders) > 0:
             for boarder_obb in self.boarders:
                 boarder_final_balance_info=[]
-                own_meal_expences = (boarder_obb.total_own_meal * self.calculate_meal_charge())
+                own_meal_expences = (boarder_obb.total_own_meal * self.calculate_meal_charge()[0])
                 guest_meal_expences=(boarder_obb.total_guest_meal * guest_meal_charge)
                 boarder_final_balance_info.append(own_meal_expences + guest_meal_expences)
                 balance=boarder_obb.deposit - (own_meal_expences + guest_meal_expences)
@@ -459,9 +458,9 @@ class Hostel:
                     if value[1] == 0:
                         file.write(f"{sl_no}. {key}----Your money in current mess is clear\n")
                     elif value[1] < 0:
-                        file.write(f"{sl_no}. {key}----Money due {-1*value[1]}\n")
+                        file.write(f"{sl_no}. {key}----Money due {round(-1*value[1],2)}\n")
                     elif value[1] > 0:
-                        file.write(f"{sl_no}. {key}----return from mess {value[1]}\n")
+                        file.write(f"{sl_no}. {key}----return from mess {round(value[1],2)}\n")
                     sl_no += 1
                     
         else:
