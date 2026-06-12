@@ -67,6 +67,10 @@ def load_from_database(hostel_object):
     return hostel_object.boarders
 
 def own_work(hostel_object):
+     with open("boarder.txt") as file:
+          for name in file:
+               clean_name=name.rstrip("\n")
+               print(f"{clean_name}")
      user_input=input("Enter the name of user --")
      user_name=str(user_input)
      wb=load_workbook(workbook_name)
@@ -77,14 +81,15 @@ def own_work(hostel_object):
                user_present=True
                break
      if user_present:
+          print(success_string)
           while user_present:
+               print(f"{info_string}-Enter 00 to exit  and {info_string} r to refresh") 
                print("--------------welcome to your profile---------------")
                user_input=input("""
                0.Meal Statues               1.Meal On
                2.Meal off                   3.Guest Meal on
                4.Guest Meal off             5.Deposit amount
-               6.Current Balance            7.Total Meals
-               8.Exit to main menu\n
+               6.Current Balance            7.Total Meals\n
                """)
                if user_input == "0":
                     meal_type=input("""
@@ -118,34 +123,39 @@ def own_work(hostel_object):
                elif user_input == "4":
                     hostel_object.guest_meal_off(user_name)
                elif user_input == "5":
-                    deposit_amount=int(input("enter the deposit amount only intiger value"))
+                    deposit_amount=int(input("enter the deposit amount only intiger value---"))
                     hostel_object.add_deposit_(user_name,deposit_amount)
                elif user_input == "6":
                     boarers_list=hostel_object.boarders
                     for object in boarers_list:
                          if object.name == user_name:
                               balance=object.deposit
-                              print(f"{user_name} your balance in mess is {balance}")
+                              print(f"{info_string}{user_name} your balance in mess is -- {balance}")
                elif user_input =="7":
                     for object in hostel_object.boarders:
                          if object.name == user_name:
                               print(f"your total meal till now : {object.total_own_meal + object.total_guest_meal}")
-               elif user_input == "8":
+               elif user_input == "00":
                     break
+               else:
+                    print(f"--{info_string}")
      else:
           print("User not exist",failure_string)
                
 def main_menu():
      my_hostel=Hostel(workbook_name)
      load_from_database(my_hostel)
+     my_hostel.create_boarders_txt()
+     my_hostel.add_boarder_from_txt()
+     print(f"{info_string}-Enter 00 to exit  and {info_string} r to refresh") 
      user_responce=input("""
-     -----------Menu----------\n
+                  -----------Menu----------\n
      ------enter the corrosponding serial number -------\n
      1.User                                 2.Add new Boarder
-     3.Add deposit                          4.Calculate Meal charge 
-     5.Update daily marketing               6.exit
-     7.Current mess balance                 8.Final Balance Sheet
-     9.Number of meals                      10.Food menu\n""")
+     3.Calculate Meal charge                4.Update daily marketing               
+     5.Current mess balance                 6.Final Balance Sheet                  
+     7.Number of meals                      8.Food menu\n""")
+     my_hostel.add_boarder_from_txt()
      if user_responce == "1":
           own_work(my_hostel)
      if user_responce == "2":
@@ -153,11 +163,6 @@ def main_menu():
           my_hostel.add_boarder(name=name)
           print(f"{name}: boarder added to to hostel mess {success_string}")
      elif user_responce == "3":
-          boarder_name=input("enter the boarder name -- ")
-          boarder_amout=int(input("enter the deposit amount -- "))
-          my_hostel.add_deposit_(boarder_name,boarder_amout)
-          print(f"{success_string}")
-     elif user_responce == "4":
           meal_charge = my_hostel.calculate_meal_charge()[0]
           print(f"Meal charge: {round(meal_charge,2)}")
           print(f"Total expence : {round(my_hostel.calculate_meal_charge()[1],2)}")
@@ -166,18 +171,18 @@ def main_menu():
                print(f"Meal_charge is under current meal charge limit")
           else:
                print(f"Meal charge is above current meal charge limit")
-     elif user_responce == "5":
+     elif user_responce == "4":
           my_hostel.update_daily_marketing()
-     elif user_responce == "6":
+     elif user_responce == "00":
           sys.exit()
-     elif user_responce == "7":
+     elif user_responce == "5":
           my_hostel.hostel_mess_balance()
-     elif user_responce == "8":
+     elif user_responce == "6":
           my_hostel.txtfile_final_balance()
-     elif user_responce == "9":
+     elif user_responce == "7":
           information = my_hostel.daily_number_of_meals()
           print(f" Day --{information[0]}\n",f"Guest Day --{information[1]}\n",f"Night --{information[2]}\n",f"Guest Night --{information[3]}\n")
-     elif user_responce == "10":
+     elif user_responce == "8":
           print("not developed yet")
      else:
           print(f"---{info_string}")

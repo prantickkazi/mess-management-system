@@ -11,6 +11,8 @@ manager_sheet_name="mess_details"
 
 final_balance_info="final_balance.txt"
 
+mess_manager_name="p"
+
 #meal prices 
 approx_meal_charge=60
 
@@ -26,14 +28,5 @@ warning_string = " ❗ "
 selected_string = " 🔵 "
 meal_on_string = " 🟢 "
 meal_off_string = " 🔴 "
-
-# #ruleboolks
-# no_beef=["nb","no beef"]
-
-# no_fish=["nf","no fish"]
-
-# meal_on=["on","yes","od"]
-
-# meal_off=["off","on","od"]
 
 

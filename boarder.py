@@ -18,16 +18,16 @@ class Boarder:
         self.total_meal=self.total_guest_meal + self.total_own_meal
 
     def check_active_status(self):
-        if self.day_active == True or self.night_active == True:
+        if self.day_active  or self.night_active :
             self.active = True
-        elif self.guest_day_active == True or self.guest_night_active == True:
-            self.guest_active == True
+        elif self.guest_day_active or self.guest_night_active :
+            self.guest_active = True
         else:
-            self.active =None
+            self.active = None
         
     def on_meal(self,info= "yes"):
         if info == "yes":
-            if self.night_active == None and self.day_active == None:
+            if self.night_active  is None and self.day_active is None:
                 self.night_active=True
                 self.day_active=True
                 print(f"your both meal is on")
@@ -35,13 +35,13 @@ class Boarder:
             else:
                 print("Your meal is active already")
         elif info == "on":
-            if self.night_active == None:
+            if self.night_active  is None:
                 self.night_active = True
                 self.total_own_meal+=1
             else :
                 print("Your night meal is already on")
         elif info == "od":
-            if self.day_active == None:
+            if self.day_active is None:
                 self.day_active=True
                 self.total_own_meal+=1
             else :
@@ -50,20 +50,20 @@ class Boarder:
            
     def off_meal(self,info):
         if info == "off":
-            if self.day_active == True and  self.night_active == True:
+            if self.day_active  and  self.night_active :
                 self.day_active = None
                 self.night_active = None
                 self.total_own_meal -=2
             else:
                 print(f"You do not have any active meal status")
         elif info == "od":
-            if self.day_active == True:
+            if self.day_active :
                 self.day_active = None
                 self.total_own_meal  -= 1
             else :
                 print("Your day meal is off already")
         elif info == "on":
-            if self.night_active == True:
+            if self.night_active :
                 self.night_active = None
                 self.total_own_meal -= 1
             else:
@@ -73,7 +73,7 @@ class Boarder:
             
     def on_guest_meal(self,info):
         if info == "yes":
-            if self.guest_day_active == None and self.guest_night_active == None:
+            if self.guest_day_active  is None and self.guest_night_active is None:
                 self.guest_active = True
                 self.guest_day_active = True
                 self.guest_night_active = True
@@ -81,14 +81,14 @@ class Boarder:
             else:
                 print("your meal is active already")   
         elif info == "od":
-            if self.guest_night_active == None:
+            if self.guest_night_active is None:
                 self.guest_active = True
                 self.guest_day_active = True
                 self.total_guest_meal += 1
             else:
                 print("active already")
         elif info == "on":
-            if self.guest_night_active == None:
+            if self.guest_night_active is None:
                 self.guest_active = True
                 self.guest_night_active = True
                 self.total_guest_meal += 1
@@ -98,20 +98,20 @@ class Boarder:
         
     def off_guest_meal(self,info):
         if info == "off":
-            if self.guest_day_active == True and self.guest_night_active == True:
+            if self.guest_day_active  and self.guest_night_active :
                 self.guest_day_active = None
                 self.guest_night_active = None
                 self.total_guest_meal -= 2
             else:
                 print("Both meal are off already")
         if info == "od":
-            if self.guest_day_active == True:    
+            if self.guest_day_active :    
                 self.guest_day_active = None
                 self.total_guest_meal -= 1
             else:
                 print("Off already")
         if info == "on":
-            if self.guest_night_active == True:
+            if self.guest_night_active :
                 self.guest_night_active = None
                 self.total_guest_meal -= 1
             else:

@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from config import (workbook_name,meal_count_sheet_name,marketing_sheet_name,
 meal_charge_limit,info_string,success_string,meal_off_string,meal_on_string,
-final_balance_info,failure_string,guest_meal_charge)
+final_balance_info,failure_string,guest_meal_charge,mess_manager_name)
 
 import datetime
 import calendar
@@ -13,6 +13,8 @@ class Hostel:
     def __init__(self,filename):
         self.filename= filename
         self.boarders= []
+        self.manager=mess_manager_name
+        
         
     #check status
     def status(self,name):
@@ -32,7 +34,7 @@ class Hostel:
                 if cell.value == name:
                     row_number = cell.row
                     break
-            
+                
             for cell in ws[1]:
                 if cell.value == day:
                     column_no = cell.column
@@ -81,9 +83,9 @@ class Hostel:
                     break
             ws[f"C{row_number}"]=target_boarder.deposit
             wb.save(workbook_name)  
-            print(f"{_name} your deposit of {amount} is successfull {success_string}.")
+            print(f"{success_string}.")
         else:
-            print(f"{_name}  is not found as a boarder")
+            print(f"{failure_string}{_name} is not found as a boarder")
      
      #on the meal and update the excell sheet   
     def _meal_on(self,_name):
@@ -118,11 +120,11 @@ class Hostel:
                     start_col=cell.column
                     break
             if info == "yes":
-                if ws.cell(row=row_number,column=start_col).value == None and ws.cell(row=row_number,column=start_col+2).value == None:
+                if ws.cell(row=row_number,column=start_col).value is None and ws.cell(row=row_number,column=start_col+2).value is None:
                     ws.cell(row=row_number,column=start_col).value = meal_on_string
                     ws.cell(row=row_number,column=start_col+2).value= meal_on_string
                     ws[f"B{row_number}"]=meal_on_string
-                    if ws[f"D{row_number}"].value == None:
+                    if ws[f"D{row_number}"].value is None:
                         ws[f"D{row_number}"].value = 0
                         ws[f"D{row_number}"].value +=2
                     else:
@@ -130,10 +132,10 @@ class Hostel:
                     print(f"{success_string}")
         
             elif info =="od":
-                if ws.cell(row=row_number,column=start_col).value == None :
+                if ws.cell(row=row_number,column=start_col).value is None :
                     ws.cell(row=row_number,column=start_col).value = meal_on_string
                     ws[f"B{row_number}"]=meal_on_string
-                    if ws[f"D{row_number}"].value == None:
+                    if ws[f"D{row_number}"].value is None:
                         ws[f"D{row_number}"].value = 0
                         ws[f"D{row_number}"].value +=1
                     else:
@@ -141,10 +143,10 @@ class Hostel:
                 print({success_string})
                 
             elif info =="on":
-                if ws.cell(row=row_number,column=start_col+2).value == None:
-                    ws.cell(row=row_number,column=start_col+2).value= meal_on_string
-                    ws[f"B{row_number}"]=meal_on_string
-                    if ws[f"D{row_number}"].value == None:
+                if ws.cell(row=row_number,column = start_col+2).value is None:
+                    ws.cell(row=row_number,column = start_col+2).value= meal_on_string
+                    ws[f"B{row_number}"] = meal_on_string
+                    if ws[f"D{row_number}"].value is None:
                         ws[f"D{row_number}"].value = 0
                         ws[f"D{row_number}"].value +=1
                     else:
@@ -226,7 +228,7 @@ class Hostel:
                 on guest meal in day-od
                 on guest meal at night-on\n
                            """)
-                if object.day_active == True or object.night_active == True:
+                if object.day_active or object.night_active :
                     object.on_guest_meal(info)
                     success=True
                     break
@@ -247,9 +249,9 @@ class Hostel:
                     get_col=cell.column
                     break
             if info == "od":
-                if ws.cell(row=row_number,column=get_col+1).value == None:
+                if ws.cell(row=row_number,column=get_col+1).value is None:
                     ws.cell(row=row_number,column=get_col+1).value=meal_on_string
-                    if ws[f"E{row_number}"].value == None:
+                    if ws[f"E{row_number}"].value is None:
                         ws[f"E{row_number}"].value = 0
                         ws[f"E{row_number}"].value +=1
                         print(success_string)
@@ -257,9 +259,9 @@ class Hostel:
                         ws[f"E{row_number}"].value +=1
                         print(success_string)
             elif info == "on":
-                if ws.cell(row=row_number,column=get_col+3).value == None:
+                if ws.cell(row=row_number,column=get_col+3).value is None:
                    ws.cell(row=row_number,column=get_col+3).value = meal_on_string
-                   if ws[f"E{row_number}"].value == None:
+                   if ws[f"E{row_number}"].value is  None:
                         ws[f"E{row_number}"].value = 0
                         ws[f"E{row_number}"].value +=1
                         print(success_string)
@@ -267,10 +269,10 @@ class Hostel:
                         ws[f"E{row_number}"].value +=1
                         print(success_string)
             elif info == "yes":
-                if ws.cell(row=row_number,column=get_col+1).value == None and  ws.cell(row=row_number,column=get_col+3).value == None:
+                if ws.cell(row=row_number,column=get_col+1).value is None and  ws.cell(row=row_number,column=get_col+3).value is None:
                     ws.cell(row=row_number,column=get_col+1).value = meal_on_string
                     ws.cell(row=row_number,column=get_col+3).value = meal_on_string
-                    if ws[f"E{row_number}"].value == None:
+                    if ws[f"E{row_number}"].value is None:
                         ws[f"E{row_number}"].value = 0
                         ws[f"E{row_number}"].value +=2
                         print(success_string)
@@ -346,7 +348,7 @@ class Hostel:
         daily_marketing_expences=0
         #daily marketing expences
         for row in range (3,day+3):
-            if ws.cell(row=row,column=3).value == None:
+            if ws.cell(row=row,column=3).value is None:
                 ws.cell(row=row,column=3).value = 0
                 daily_marketing_expences += ws.cell(row=row,column=3).value
             else:
@@ -425,22 +427,17 @@ class Hostel:
         year=now.year
         month=now.month
         day=now.day
-        user_input=input("""
-                    1.Update Daily Marketing\n""")
-        if user_input == "1":
-            for cell in ws["A"]:
-                if cell.value == f"{day}/{month}/{year}":
-                    row_num=cell.row
-                    break
-        if user_input == "1":
-            ws.cell(row=row_num,column=2).value=grocery_shoper=input("Enter the grocery provider's name --- ")
-            ws.cell(row=row_num,column=3).value=money_spend=input("Enter the money spent in daily marketing ---")
-            ws.cell(row=row_num,column=4).value=remark=input("Enter the remarks ---")
-            print(success_string)
-            wb.save(workbook_name)
-        else:
-            print(info_string,"--- not a valid user input , try again")
-      
+        for cell in ws["A"]:
+            if cell.value == f"{day}/{month}/{year}":
+                row_num=cell.row
+                break
+       
+        ws.cell(row=row_num,column=2).value=grocery_shoper=input("Enter the grocery provider's name --- ")
+        ws.cell(row=row_num,column=3).value=money_spend=input("Enter the money spent in daily marketing ---")
+        ws.cell(row=row_num,column=4).value=remark=input("Enter the remarks ---")
+        print(success_string)
+        wb.save(workbook_name)
+    
     def txtfile_final_balance(self):
         balance_dict={}
         if len(self.boarders) > 0:
@@ -503,6 +500,27 @@ class Hostel:
         info_list=list(info_tup)
         
         return info_list
+        
+    def create_boarders_txt(self):
+        with open("boarder.txt","w") as file:
+            sl_no=1
+            if self.boarders:
+                for boarer_obb in self.boarders:
+                    file.write(f"{sl_no}.{boarer_obb.name}\n")
+                    sl_no += 1
+            else:
+                print("No boarders exist in the hostel ")
+                
+    def add_boarder_from_txt(self):
+        name_list=[]
+        for obb in self.boarders:
+            name_list.append(obb.name)
+        with open("boarder.txt", "r") as file:
+            for name in file:
+                clean_line=name.rstrip("\n")
+                if clean_line[2:] not in name_list:
+                    self.add_boarder(clean_line[2:])
+        
        
         
         
